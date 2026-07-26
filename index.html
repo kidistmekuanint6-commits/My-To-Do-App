@@ -1,126 +1,382 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>My To-Do App</title>
 
-    <link rel="stylesheet" href="style.css">
-    <link rel="manifest" href="manifest.json">
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
 
-    <meta name="theme-color" content="#d89bb5">
+    <link
+        rel="manifest"
+        href="manifest.json"
+    >
+
+    <meta
+        name="theme-color"
+        content="#d89bb5"
+    >
 </head>
+
 
 <body>
 
-    <div class="app">
 
-        <h1>My To-Do List 📝</h1>
+<!-- =========================
+     SIDE MENU
+========================= -->
 
-        <p class="subtitle">
-            Organize your day, one task at a time ✨
-        </p>
-
-
-        <!-- Add Task -->
-
-        <div class="input-area">
-
-            <input 
-                type="text" 
-                id="taskInput" 
-                placeholder="What do you need to do?"
-            >
-
-            <input 
-                type="datetime-local" 
-                id="reminderInput"
-            >
-
-            <button id="addButton">
-                Add
-            </button>
-
-        </div>
+<div
+    id="overlay"
+    class="overlay"
+></div>
 
 
-        <!-- Reminder Permission -->
+<aside
+    id="sidebar"
+    class="sidebar"
+>
 
-        <button id="notificationButton">
-            🔔 Enable Notifications
+    <div class="sidebar-header">
+
+        <h2>🌸 My To-Do</h2>
+
+        <button
+            id="closeMenuButton"
+            class="close-menu"
+        >
+            ×
         </button>
-
-
-        <!-- Active Tasks -->
-
-        <h2>My Tasks 📋</h2>
-
-        <ul id="taskList"></ul>
-
-        <p id="emptyMessage">
-            No tasks yet. Add your first task! 🌸
-        </p>
-
-
-        <!-- Recycle Bin -->
-
-        <div class="recycle-section">
-
-            <h2>🗑️ Recycle Bin</h2>
-
-            <ul id="recycleList"></ul>
-
-            <p id="emptyRecycleMessage">
-                Your Recycle Bin is empty.
-            </p>
-
-            <button id="emptyRecycleButton">
-                🧹 Empty Recycle Bin
-            </button>
-
-        </div>
 
     </div>
 
 
-    <!-- Main JavaScript -->
+    <nav class="menu">
 
-    <script src="script.js"></script>
+        <button
+            class="menu-item active"
+            data-page="tasksPage"
+        >
+            📝 My Tasks
+        </button>
 
 
-    <!-- Register Service Worker -->
+        <button
+            class="menu-item"
+            data-page="recyclePage"
+        >
+            🗑️ Recycle Bin
+        </button>
 
-    <script>
 
-        if ("serviceWorker" in navigator) {
+        <button
+            class="menu-item"
+            data-page="remindersPage"
+        >
+            🔔 Reminders
+        </button>
 
-            window.addEventListener("load", function() {
 
-                navigator.serviceWorker.register("service-worker.js")
+        <button
+            class="menu-item"
+            data-page="settingsPage"
+        >
+            ⚙️ Settings
+        </button>
 
-                    .then(function() {
+    </nav>
 
-                        console.log(
-                            "Service Worker registered successfully!"
-                        );
+</aside>
 
-                    })
 
-                    .catch(function(error) {
 
-                        console.log(
-                            "Service Worker registration failed:",
-                            error
-                        );
+<!-- =========================
+     MAIN APP
+========================= -->
 
-                    });
+<div class="app">
+
+
+    <!-- TOP BAR -->
+
+    <header class="top-bar">
+
+        <button
+            id="menuButton"
+            class="menu-button"
+        >
+            ☰
+        </button>
+
+
+        <h1>
+            📝 My To-Do App
+        </h1>
+
+    </header>
+
+
+
+    <!-- =========================
+         TASKS PAGE
+    ========================= -->
+
+    <main
+        id="tasksPage"
+        class="page active-page"
+    >
+
+        <div class="welcome">
+
+            <h2>
+                What are you working on? ✨
+            </h2>
+
+            <p>
+                Organize your day, one task at a time.
+            </p>
+
+        </div>
+
+
+        <!-- ADD TASK -->
+
+        <div class="input-area">
+
+            <input
+                type="text"
+                id="taskInput"
+                placeholder="Write a new task..."
+            >
+
+
+            <input
+                type="datetime-local"
+                id="reminderInput"
+            >
+
+
+            <button
+                id="addButton"
+            >
+                Add Task
+            </button>
+
+        </div>
+
+
+
+        <!-- TASKS -->
+
+        <div class="task-section">
+
+            <h3>
+                My Tasks
+            </h3>
+
+
+            <ul
+                id="taskList"
+            ></ul>
+
+
+            <p
+                id="emptyMessage"
+            >
+                No tasks yet. Add your first task! 🌸
+            </p>
+
+        </div>
+
+    </main>
+
+
+
+    <!-- =========================
+         RECYCLE BIN PAGE
+    ========================= -->
+
+    <main
+        id="recyclePage"
+        class="page"
+    >
+
+        <div class="page-title">
+
+            <h2>
+                🗑️ Recycle Bin
+            </h2>
+
+            <p>
+                Deleted tasks stay here until you remove them forever.
+            </p>
+
+        </div>
+
+
+        <ul
+            id="recycleList"
+        ></ul>
+
+
+        <p
+            id="emptyRecycleMessage"
+        >
+            Your Recycle Bin is empty.
+        </p>
+
+
+        <button
+            id="emptyRecycleButton"
+        >
+            🧹 Empty Recycle Bin
+        </button>
+
+    </main>
+
+
+
+    <!-- =========================
+         REMINDERS PAGE
+    ========================= -->
+
+    <main
+        id="remindersPage"
+        class="page"
+    >
+
+        <div class="page-title">
+
+            <h2>
+                🔔 Reminders
+            </h2>
+
+            <p>
+                Keep track of your upcoming task reminders.
+            </p>
+
+        </div>
+
+
+        <div
+            id="reminderList"
+            class="reminder-list"
+        ></div>
+
+
+        <p
+            id="emptyReminderMessage"
+        >
+            You don't have any reminders yet. ⏰
+        </p>
+
+    </main>
+
+
+
+    <!-- =========================
+         SETTINGS PAGE
+    ========================= -->
+
+    <main
+        id="settingsPage"
+        class="page"
+    >
+
+        <div class="page-title">
+
+            <h2>
+                ⚙️ Settings
+            </h2>
+
+            <p>
+                Manage your app preferences.
+            </p>
+
+        </div>
+
+
+        <div class="setting-card">
+
+            <h3>
+                🔔 Notifications
+            </h3>
+
+            <p>
+                Allow the app to send you reminders.
+            </p>
+
+
+            <button
+                id="notificationButton"
+            >
+                Enable Notifications
+            </button>
+
+        </div>
+
+    </main>
+
+
+</div>
+
+
+
+<!-- =========================
+     JAVASCRIPT
+========================= -->
+
+<script src="script.js"></script>
+
+
+<!-- SERVICE WORKER -->
+
+<script>
+
+if ("serviceWorker" in navigator) {
+
+    window.addEventListener(
+        "load",
+        function() {
+
+            navigator.serviceWorker.register(
+                "service-worker.js"
+            )
+
+            .then(function() {
+
+                console.log(
+                    "Service Worker registered successfully!"
+                );
+
+            })
+
+            .catch(function(error) {
+
+                console.log(
+                    "Service Worker registration failed:",
+                    error
+                );
 
             });
 
         }
+    );
 
-    </script>
+}
+
+</script>
+
 
 </body>
+
 </html>
