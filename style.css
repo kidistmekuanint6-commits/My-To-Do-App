@@ -1,55 +1,105 @@
+/* ================================
+   RESET
+================================ */
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+
+/* ================================
+   BODY
+================================ */
+
 body {
     font-family: Arial, sans-serif;
+
     min-height: 100vh;
 
     display: flex;
     justify-content: center;
-    align-items: center;
 
-    background: linear-gradient(135deg, #ffd6e7, #e8d9ff);
+    background: linear-gradient(
+        135deg,
+        #ffd6e7,
+        #e8d9ff
+    );
 
-    padding: 20px;
+    padding: 30px 20px;
 }
+
+
+/* ================================
+   MAIN APP
+================================ */
 
 .app {
     width: 100%;
-    max-width: 500px;
+
+    max-width: 750px;
 
     background: white;
 
-    padding: 35px;
+    padding: 40px;
 
-    border-radius: 20px;
+    border-radius: 24px;
 
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    box-shadow:
+        0 15px 40px
+        rgba(0, 0, 0, 0.12);
 }
+
+
+/* ================================
+   TITLE
+================================ */
 
 h1 {
     text-align: center;
+
     color: #333;
+
     margin-bottom: 8px;
+
+    font-size: 32px;
 }
+
 
 .subtitle {
     text-align: center;
+
     color: #777;
-    margin-bottom: 25px;
+
+    margin-bottom: 30px;
+
+    font-size: 16px;
 }
+
+
+/* ================================
+   INPUT AREA
+================================ */
 
 .input-area {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 25px;
+    display: grid;
+
+    grid-template-columns:
+        1fr
+        220px
+        100px;
+
+    gap: 12px;
+
+    margin-bottom: 15px;
 }
 
-#taskInput {
-    flex: 1;
+
+#taskInput,
+#reminderInput {
+
+    width: 100%;
 
     padding: 14px;
 
@@ -57,16 +107,33 @@ h1 {
 
     border-radius: 10px;
 
-    font-size: 16px;
+    font-size: 15px;
 
     outline: none;
+
+    background: #fff;
+
+    transition: 0.3s;
 }
 
-#taskInput:focus {
+
+#taskInput:focus,
+#reminderInput:focus {
+
     border-color: #d89bb5;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(216, 155, 181, 0.15);
 }
+
+
+/* ================================
+   ADD BUTTON
+================================ */
 
 #addButton {
+
     padding: 14px 20px;
 
     border: none;
@@ -79,71 +146,390 @@ h1 {
 
     font-size: 16px;
 
+    font-weight: bold;
+
     cursor: pointer;
 
     transition: 0.3s;
 }
 
+
 #addButton:hover {
+
     background: #c47fa0;
+
+    transform: translateY(-2px);
 }
+
+
+/* ================================
+   NOTIFICATION BUTTON
+================================ */
+
+#notificationButton {
+
+    width: 100%;
+
+    padding: 12px;
+
+    margin-bottom: 30px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: #f3e3ec;
+
+    color: #a55f82;
+
+    font-size: 15px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.3s;
+}
+
+
+#notificationButton:hover {
+
+    background: #ead1df;
+}
+
+
+/* ================================
+   SECTION TITLES
+================================ */
+
+h2 {
+
+    color: #444;
+
+    font-size: 20px;
+
+    margin-bottom: 15px;
+}
+
+
+/* ================================
+   TASK LIST
+================================ */
 
 #taskList {
+
     list-style: none;
+
+    margin-bottom: 15px;
 }
 
+
 .task {
+
     display: flex;
 
     justify-content: space-between;
 
     align-items: center;
 
+    gap: 15px;
+
     background: #fafafa;
 
-    padding: 12px 15px;
+    padding: 15px 18px;
 
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 
-    border-radius: 10px;
+    border-radius: 12px;
 
-    border-left: 4px solid #d89bb5;
+    border-left: 5px solid #d89bb5;
+
+    box-shadow:
+        0 3px 10px
+        rgba(0, 0, 0, 0.04);
 }
 
+
 .task-text {
+
     cursor: pointer;
 
     flex: 1;
+
+    color: #444;
+
+    font-size: 16px;
+
+    word-break: break-word;
 }
 
+
 .task.completed .task-text {
+
     text-decoration: line-through;
 
     color: #999;
 }
 
+
+/* ================================
+   REMINDER TEXT
+================================ */
+
+.task small {
+
+    display: block;
+
+    color: #a55f82;
+
+    font-size: 12px;
+
+    margin-left: 5px;
+}
+
+
+/* ================================
+   DELETE BUTTON
+================================ */
+
 .delete-button {
+
     border: none;
 
     background: #ff6b6b;
 
     color: white;
 
-    padding: 7px 10px;
+    padding: 9px 12px;
 
-    border-radius: 7px;
+    border-radius: 8px;
 
     cursor: pointer;
+
+    white-space: nowrap;
+
+    transition: 0.3s;
 }
+
 
 .delete-button:hover {
+
     background: #e55555;
+
+    transform: translateY(-1px);
 }
 
-#emptyMessage {
+
+/* ================================
+   EMPTY MESSAGE
+================================ */
+
+#emptyMessage,
+#emptyRecycleMessage {
+
     text-align: center;
 
     color: #999;
 
-    margin-top: 15px;
+    margin: 20px 0;
+}
+
+
+/* ================================
+   RECYCLE BIN
+================================ */
+
+.recycle-section {
+
+    margin-top: 40px;
+
+    padding-top: 30px;
+
+    border-top: 2px solid #f1e5eb;
+}
+
+
+#recycleList {
+
+    list-style: none;
+
+    margin-bottom: 15px;
+}
+
+
+.deleted-task {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    flex-wrap: wrap;
+
+    background: #fff7f9;
+
+    padding: 15px;
+
+    margin-bottom: 10px;
+
+    border-radius: 10px;
+
+    border-left: 4px solid #ffb6c9;
+}
+
+
+.deleted-task span {
+
+    flex: 1;
+
+    color: #777;
+
+    text-decoration: line-through;
+
+    min-width: 150px;
+}
+
+
+.deleted-task button {
+
+    border: none;
+
+    padding: 8px 10px;
+
+    border-radius: 7px;
+
+    cursor: pointer;
+
+    font-size: 13px;
+}
+
+
+.deleted-task button:first-of-type {
+
+    background: #d89bb5;
+
+    color: white;
+}
+
+
+.deleted-task button:last-of-type {
+
+    background: #ff6b6b;
+
+    color: white;
+}
+
+
+/* ================================
+   EMPTY RECYCLE BIN BUTTON
+================================ */
+
+#emptyRecycleButton {
+
+    width: 100%;
+
+    padding: 12px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: #555;
+
+    color: white;
+
+    font-size: 14px;
+
+    cursor: pointer;
+
+    transition: 0.3s;
+}
+
+
+#emptyRecycleButton:hover {
+
+    background: #333;
+}
+
+
+/* ================================
+   MOBILE RESPONSIVE DESIGN
+================================ */
+
+@media (max-width: 650px) {
+
+    body {
+
+        padding: 15px;
+
+        align-items: flex-start;
+    }
+
+
+    .app {
+
+        max-width: 100%;
+
+        padding: 25px 18px;
+
+        border-radius: 18px;
+    }
+
+
+    h1 {
+
+        font-size: 26px;
+    }
+
+
+    .input-area {
+
+        grid-template-columns: 1fr;
+
+        gap: 10px;
+    }
+
+
+    #addButton {
+
+        width: 100%;
+    }
+
+
+    .task {
+
+        align-items: flex-start;
+
+        flex-wrap: wrap;
+    }
+
+
+    .task-text {
+
+        width: 100%;
+
+        flex-basis: 100%;
+    }
+
+
+    .delete-button {
+
+        width: 100%;
+    }
+
+
+    .deleted-task {
+
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+
+    .deleted-task button {
+
+        width: 100%;
+    }
+
 }
