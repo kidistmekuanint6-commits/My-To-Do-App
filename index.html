@@ -7,11 +7,8 @@
     <title>My To-Do App</title>
 
     <link rel="stylesheet" href="style.css">
-
-    <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
 
-    <!-- App Theme Color -->
     <meta name="theme-color" content="#d89bb5">
 </head>
 
@@ -25,6 +22,9 @@
             Organize your day, one task at a time ✨
         </p>
 
+
+        <!-- Add Task -->
+
         <div class="input-area">
 
             <input 
@@ -33,11 +33,28 @@
                 placeholder="What do you need to do?"
             >
 
+            <input 
+                type="datetime-local" 
+                id="reminderInput"
+            >
+
             <button id="addButton">
                 Add
             </button>
 
         </div>
+
+
+        <!-- Reminder Permission -->
+
+        <button id="notificationButton">
+            🔔 Enable Notifications
+        </button>
+
+
+        <!-- Active Tasks -->
+
+        <h2>My Tasks 📋</h2>
 
         <ul id="taskList"></ul>
 
@@ -45,30 +62,64 @@
             No tasks yet. Add your first task! 🌸
         </p>
 
+
+        <!-- Recycle Bin -->
+
+        <div class="recycle-section">
+
+            <h2>🗑️ Recycle Bin</h2>
+
+            <ul id="recycleList"></ul>
+
+            <p id="emptyRecycleMessage">
+                Your Recycle Bin is empty.
+            </p>
+
+            <button id="emptyRecycleButton">
+                🧹 Empty Recycle Bin
+            </button>
+
+        </div>
+
     </div>
 
 
     <!-- Main JavaScript -->
+
     <script src="script.js"></script>
 
 
     <!-- Register Service Worker -->
+
     <script>
+
         if ("serviceWorker" in navigator) {
 
             window.addEventListener("load", function() {
 
                 navigator.serviceWorker.register("service-worker.js")
+
                     .then(function() {
-                        console.log("Service Worker registered successfully!");
+
+                        console.log(
+                            "Service Worker registered successfully!"
+                        );
+
                     })
+
                     .catch(function(error) {
-                        console.log("Service Worker registration failed:", error);
+
+                        console.log(
+                            "Service Worker registration failed:",
+                            error
+                        );
+
                     });
 
             });
 
         }
+
     </script>
 
 </body>
