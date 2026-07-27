@@ -1,7 +1,6 @@
-```javascript
 /* =========================================================
    MY TO-DO APP — COMPLETE SCRIPT
-   Frontend + Reminder Server Connection
+   GitHub Pages + Render Reminder Server
 ========================================================= */
 
 
@@ -76,6 +75,28 @@ const pages =
 
 
 /* =========================================================
+   CHECK REQUIRED ELEMENTS
+========================================================= */
+
+console.log("🔥 SCRIPT.JS IS RUNNING");
+
+console.log(
+    "Add button found:",
+    addButton
+);
+
+console.log(
+    "Task input found:",
+    taskInput
+);
+
+console.log(
+    "Reminder input found:",
+    reminderInput
+);
+
+
+/* =========================================================
    LOAD LOCAL DATA
 ========================================================= */
 
@@ -125,18 +146,26 @@ function saveDeletedTasks() {
 
 function displayTasks() {
 
+    if (!taskList) {
+        return;
+    }
+
     taskList.innerHTML = "";
 
 
     if (tasks.length === 0) {
 
-        emptyMessage.style.display =
-            "block";
+        if (emptyMessage) {
+            emptyMessage.style.display =
+                "block";
+        }
 
     } else {
 
-        emptyMessage.style.display =
-            "none";
+        if (emptyMessage) {
+            emptyMessage.style.display =
+                "none";
+        }
 
     }
 
@@ -227,10 +256,7 @@ function displayTasks() {
                     displayReminders();
 
 
-                    /*
-                       If this task was connected
-                       to the server, delete it there too.
-                    */
+                    /* DELETE FROM SERVER */
 
                     if (
                         deletedTask.serverId
@@ -248,14 +274,16 @@ function displayTasks() {
                                 }
                             );
 
+
                             console.log(
-                                "Reminder deleted from server."
+                                "✅ Reminder deleted from server."
                             );
+
 
                         } catch (error) {
 
-                            console.log(
-                                "Could not delete reminder from server:",
+                            console.error(
+                                "❌ Could not delete reminder from server:",
                                 error
                             );
 
@@ -292,6 +320,11 @@ function displayTasks() {
 ========================================================= */
 
 async function addTask() {
+
+    console.log(
+        "🔥 ADD TASK FUNCTION STARTED"
+    );
+
 
     const taskText =
         taskInput.value.trim();
@@ -339,8 +372,7 @@ async function addTask() {
 
 
     /*
-       IF A REMINDER WAS SELECTED,
-       SEND IT TO THE SERVER
+       SEND REMINDER TO ONLINE SERVER
     */
 
     if (
@@ -350,7 +382,7 @@ async function addTask() {
         try {
 
             console.log(
-                "Sending reminder to server..."
+                "📤 Sending reminder to Render server..."
             );
 
 
@@ -393,7 +425,8 @@ async function addTask() {
             ) {
 
                 throw new Error(
-                    "Server returned an error."
+                    "Server returned HTTP " +
+                    response.status
                 );
 
             }
@@ -404,7 +437,7 @@ async function addTask() {
 
 
             console.log(
-                "Reminder successfully saved on server:",
+                "✅ Reminder successfully saved on server:",
                 data
             );
 
@@ -413,21 +446,27 @@ async function addTask() {
                SAVE SERVER ID
             */
 
-            newTask.serverId =
-                data.reminder.id;
+            if (
+                data.reminder
+            ) {
+
+                newTask.serverId =
+                    data.reminder.id;
+
+            }
 
 
         } catch (error) {
 
             console.error(
-                "Could not connect to reminder server:",
+                "❌ Could not connect to reminder server:",
                 error
             );
 
 
             alert(
-                "The reminder could not be connected to the server.\n\n" +
-                "Make sure your Node.js reminder server is running."
+                "The reminder could not be connected to the online server.\n\n" +
+                "Please check your internet connection."
             );
 
         }
@@ -461,6 +500,68 @@ async function addTask() {
 
     taskInput.focus();
 
+
+    console.log(
+        "✅ Task added successfully!"
+    );
+
+}
+
+
+/* =========================================================
+   ADD TASK BUTTON
+========================================================= */
+
+if (
+    addButton
+) {
+
+    addButton.addEventListener(
+        "click",
+        function() {
+
+            console.log(
+                "🔥 ADD BUTTON WAS CLICKED!"
+            );
+
+
+            addTask();
+
+        }
+    );
+
+} else {
+
+    console.error(
+        "❌ ADD BUTTON NOT FOUND!"
+    );
+
+}
+
+
+/* =========================================================
+   ENTER KEY
+========================================================= */
+
+if (
+    taskInput
+) {
+
+    taskInput.addEventListener(
+        "keypress",
+        function(event) {
+
+            if (
+                event.key === "Enter"
+            ) {
+
+                addTask();
+
+            }
+
+        }
+    );
+
 }
 
 
@@ -470,6 +571,15 @@ async function addTask() {
 
 function displayRecycleBin() {
 
+    if (
+        !recycleList
+    ) {
+
+        return;
+
+    }
+
+
     recycleList.innerHTML = "";
 
 
@@ -477,22 +587,49 @@ function displayRecycleBin() {
         deletedTasks.length === 0
     ) {
 
-        emptyRecycleMessage.style.display =
-            "block";
+        if (
+            emptyRecycleMessage
+        ) {
 
-        emptyRecycleButton.style.display =
-            "none";
+            emptyRecycleMessage.style.display =
+                "block";
+
+        }
+
+
+        if (
+            emptyRecycleButton
+        ) {
+
+            emptyRecycleButton.style.display =
+                "none";
+
+        }
+
 
         return;
 
     }
 
 
-    emptyRecycleMessage.style.display =
-        "none";
+    if (
+        emptyRecycleMessage
+    ) {
 
-    emptyRecycleButton.style.display =
-        "block";
+        emptyRecycleMessage.style.display =
+            "none";
+
+    }
+
+
+    if (
+        emptyRecycleButton
+    ) {
+
+        emptyRecycleButton.style.display =
+            "block";
+
+    }
 
 
     deletedTasks.forEach(
@@ -523,7 +660,7 @@ function displayRecycleBin() {
 
             restoreButton.addEventListener(
                 "click",
-                async function() {
+                function() {
 
                     tasks.push(
                         task
@@ -608,41 +745,47 @@ function displayRecycleBin() {
    EMPTY RECYCLE BIN
 ========================================================= */
 
-emptyRecycleButton.addEventListener(
-    "click",
-    function() {
+if (
+    emptyRecycleButton
+) {
 
-        if (
-            deletedTasks.length === 0
-        ) {
+    emptyRecycleButton.addEventListener(
+        "click",
+        function() {
 
-            return;
+            if (
+                deletedTasks.length === 0
+            ) {
+
+                return;
+
+            }
+
+
+            const confirmDelete =
+                confirm(
+                    "Are you sure you want to permanently delete everything in the Recycle Bin?"
+                );
+
+
+            if (
+                confirmDelete
+            ) {
+
+                deletedTasks = [];
+
+
+                saveDeletedTasks();
+
+
+                displayRecycleBin();
+
+            }
 
         }
+    );
 
-
-        const confirmDelete =
-            confirm(
-                "Are you sure you want to permanently delete everything in the Recycle Bin?"
-            );
-
-
-        if (
-            confirmDelete
-        ) {
-
-            deletedTasks = [];
-
-
-            saveDeletedTasks();
-
-
-            displayRecycleBin();
-
-        }
-
-    }
-);
+}
 
 
 /* =========================================================
@@ -650,6 +793,15 @@ emptyRecycleButton.addEventListener(
 ========================================================= */
 
 function displayReminders() {
+
+    if (
+        !reminderList
+    ) {
+
+        return;
+
+    }
+
 
     reminderList.innerHTML = "";
 
@@ -668,16 +820,28 @@ function displayReminders() {
         reminders.length === 0
     ) {
 
-        emptyReminderMessage.style.display =
-            "block";
+        if (
+            emptyReminderMessage
+        ) {
+
+            emptyReminderMessage.style.display =
+                "block";
+
+        }
 
         return;
 
     }
 
 
-    emptyReminderMessage.style.display =
-        "none";
+    if (
+        emptyReminderMessage
+    ) {
+
+        emptyReminderMessage.style.display =
+            "none";
+
+    }
 
 
     reminders.forEach(
@@ -737,46 +901,90 @@ function displayReminders() {
 
 function openMenu() {
 
-    sidebar.classList.add(
-        "open"
-    );
+    if (
+        sidebar
+    ) {
 
-    overlay.classList.add(
-        "show"
-    );
+        sidebar.classList.add(
+            "open"
+        );
+
+    }
+
+
+    if (
+        overlay
+    ) {
+
+        overlay.classList.add(
+            "show"
+        );
+
+    }
 
 }
 
 
 function closeMenu() {
 
-    sidebar.classList.remove(
-        "open"
-    );
+    if (
+        sidebar
+    ) {
 
-    overlay.classList.remove(
-        "show"
+        sidebar.classList.remove(
+            "open"
+        );
+
+    }
+
+
+    if (
+        overlay
+    ) {
+
+        overlay.classList.remove(
+            "show"
+        );
+
+    }
+
+}
+
+
+if (
+    menuButton
+) {
+
+    menuButton.addEventListener(
+        "click",
+        openMenu
     );
 
 }
 
 
-menuButton.addEventListener(
-    "click",
-    openMenu
-);
+if (
+    closeMenuButton
+) {
+
+    closeMenuButton.addEventListener(
+        "click",
+        closeMenu
+    );
+
+}
 
 
-closeMenuButton.addEventListener(
-    "click",
-    closeMenu
-);
+if (
+    overlay
+) {
 
+    overlay.addEventListener(
+        "click",
+        closeMenu
+    );
 
-overlay.addEventListener(
-    "click",
-    closeMenu
-);
+}
 
 
 /* =========================================================
@@ -811,9 +1019,15 @@ menuItems.forEach(
                     );
 
 
-                selectedPage.classList.add(
-                    "active-page"
-                );
+                if (
+                    selectedPage
+                ) {
+
+                    selectedPage.classList.add(
+                        "active-page"
+                    );
+
+                }
 
 
                 menuItems.forEach(
@@ -843,36 +1057,6 @@ menuItems.forEach(
 
             }
         );
-
-    }
-);
-
-
-/* =========================================================
-   ADD TASK BUTTON
-========================================================= */
-
-addButton.addEventListener(
-    "click",
-    addTask
-);
-
-
-/* =========================================================
-   ENTER KEY
-========================================================= */
-
-taskInput.addEventListener(
-    "keypress",
-    function(event) {
-
-        if (
-            event.key === "Enter"
-        ) {
-
-            addTask();
-
-        }
 
     }
 );
@@ -911,8 +1095,14 @@ async function enableNotifications() {
         );
 
 
-        notificationButton.textContent =
-            "🔔 Notifications Enabled";
+        if (
+            notificationButton
+        ) {
+
+            notificationButton.textContent =
+                "🔔 Notifications Enabled";
+
+        }
 
 
         alert(
@@ -936,10 +1126,16 @@ async function enableNotifications() {
 }
 
 
-notificationButton.addEventListener(
-    "click",
-    enableNotifications
-);
+if (
+    notificationButton
+) {
+
+    notificationButton.addEventListener(
+        "click",
+        enableNotifications
+    );
+
+}
 
 
 /* =========================================================
@@ -947,6 +1143,15 @@ notificationButton.addEventListener(
 ========================================================= */
 
 function updateDarkModeButton() {
+
+    if (
+        !darkModeButton
+    ) {
+
+        return;
+
+    }
+
 
     const darkMode =
         localStorage.getItem(
@@ -971,26 +1176,32 @@ function updateDarkModeButton() {
 }
 
 
-darkModeButton.addEventListener(
-    "click",
-    function() {
+if (
+    darkModeButton
+) {
 
-        const darkMode =
-            document.body.classList.toggle(
-                "dark-mode"
+    darkModeButton.addEventListener(
+        "click",
+        function() {
+
+            const darkMode =
+                document.body.classList.toggle(
+                    "dark-mode"
+                );
+
+
+            localStorage.setItem(
+                "darkMode",
+                darkMode
             );
 
 
-        localStorage.setItem(
-            "darkMode",
-            darkMode
-        );
+            updateDarkModeButton();
 
+        }
+    );
 
-        updateDarkModeButton();
-
-    }
-);
+}
 
 
 function loadDarkMode() {
@@ -1021,52 +1232,58 @@ function loadDarkMode() {
    CLEAR ALL TASKS
 ========================================================= */
 
-clearTasksButton.addEventListener(
-    "click",
-    function() {
+if (
+    clearTasksButton
+) {
 
-        if (
-            tasks.length === 0
-        ) {
+    clearTasksButton.addEventListener(
+        "click",
+        function() {
 
-            alert(
-                "You don't have any tasks to clear."
-            );
+            if (
+                tasks.length === 0
+            ) {
 
-            return;
+                alert(
+                    "You don't have any tasks to clear."
+                );
+
+                return;
+
+            }
+
+
+            const confirmClear =
+                confirm(
+                    "Are you sure you want to permanently delete ALL your tasks? This cannot be undone."
+                );
+
+
+            if (
+                confirmClear
+            ) {
+
+                tasks = [];
+
+
+                saveTasks();
+
+
+                displayTasks();
+
+                displayReminders();
+
+
+                alert(
+                    "All tasks have been cleared."
+                );
+
+            }
 
         }
+    );
 
-
-        const confirmClear =
-            confirm(
-                "Are you sure you want to permanently delete ALL your tasks? This cannot be undone."
-            );
-
-
-        if (
-            confirmClear
-        ) {
-
-            tasks = [];
-
-
-            saveTasks();
-
-
-            displayTasks();
-
-            displayReminders();
-
-
-            alert(
-                "All tasks have been cleared."
-            );
-
-        }
-
-    }
-);
+}
 
 
 /* =========================================================
@@ -1197,8 +1414,14 @@ function loadSettings() {
         "granted"
     ) {
 
-        notificationButton.textContent =
-            "🔔 Notifications Enabled";
+        if (
+            notificationButton
+        ) {
+
+            notificationButton.textContent =
+                "🔔 Notifications Enabled";
+
+        }
 
     }
 
@@ -1224,12 +1447,17 @@ checkReminders();
 
 
 /* =========================================================
-   TEST SERVER CONNECTION
+   TEST ONLINE SERVER CONNECTION
 ========================================================= */
 
 async function testServerConnection() {
 
     try {
+
+        console.log(
+            "🔄 Testing online reminder server..."
+        );
+
 
         const response =
             await fetch(
@@ -1237,12 +1465,24 @@ async function testServerConnection() {
             );
 
 
+        if (
+            !response.ok
+        ) {
+
+            throw new Error(
+                "Server returned HTTP " +
+                response.status
+            );
+
+        }
+
+
         const data =
             await response.json();
 
 
         console.log(
-            "✅ Reminder server connected:",
+            "✅ Online reminder server connected:",
             data
         );
 
@@ -1250,7 +1490,7 @@ async function testServerConnection() {
     } catch (error) {
 
         console.error(
-            "❌ Reminder server connection failed:",
+            "❌ Online reminder server connection failed:",
             error
         );
 
@@ -1260,4 +1500,12 @@ async function testServerConnection() {
 
 
 testServerConnection();
-```
+
+
+/* =========================================================
+   FINAL DEBUG MESSAGE
+========================================================= */
+
+console.log(
+    "✅ My To-Do App JavaScript loaded successfully!"
+);
