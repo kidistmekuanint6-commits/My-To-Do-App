@@ -1,15 +1,40 @@
-/* =========================
+```javascript
+/* =========================================================
+   MY TO-DO APP — COMPLETE SCRIPT
+   Frontend + Reminder Server Connection
+========================================================= */
+
+
+/* =========================================================
+   SERVER URL
+========================================================= */
+
+const SERVER_URL =
+    "https://my-todo-reminder-server.onrender.com";
+
+
+/* =========================================================
    GET ELEMENTS
-========================= */
+========================================================= */
 
-const taskInput = document.getElementById("taskInput");
-const reminderInput = document.getElementById("reminderInput");
-const addButton = document.getElementById("addButton");
+const taskInput =
+    document.getElementById("taskInput");
 
-const taskList = document.getElementById("taskList");
-const emptyMessage = document.getElementById("emptyMessage");
+const reminderInput =
+    document.getElementById("reminderInput");
 
-const recycleList = document.getElementById("recycleList");
+const addButton =
+    document.getElementById("addButton");
+
+const taskList =
+    document.getElementById("taskList");
+
+const emptyMessage =
+    document.getElementById("emptyMessage");
+
+const recycleList =
+    document.getElementById("recycleList");
+
 const emptyRecycleMessage =
     document.getElementById("emptyRecycleMessage");
 
@@ -24,6 +49,12 @@ const emptyReminderMessage =
 
 const notificationButton =
     document.getElementById("notificationButton");
+
+const darkModeButton =
+    document.getElementById("darkModeButton");
+
+const clearTasksButton =
+    document.getElementById("clearTasksButton");
 
 const sidebar =
     document.getElementById("sidebar");
@@ -44,9 +75,9 @@ const pages =
     document.querySelectorAll(".page");
 
 
-/* =========================
-   LOAD SAVED DATA
-========================= */
+/* =========================================================
+   LOAD LOCAL DATA
+========================================================= */
 
 let tasks =
     JSON.parse(
@@ -60,9 +91,9 @@ let deletedTasks =
     ) || [];
 
 
-/* =========================
+/* =========================================================
    SAVE TASKS
-========================= */
+========================================================= */
 
 function saveTasks() {
 
@@ -74,9 +105,9 @@ function saveTasks() {
 }
 
 
-/* =========================
+/* =========================================================
    SAVE DELETED TASKS
-========================= */
+========================================================= */
 
 function saveDeletedTasks() {
 
@@ -88,9 +119,9 @@ function saveDeletedTasks() {
 }
 
 
-/* =========================
+/* =========================================================
    DISPLAY TASKS
-========================= */
+========================================================= */
 
 function displayTasks() {
 
@@ -170,7 +201,7 @@ function displayTasks() {
 
             deleteButton.addEventListener(
                 "click",
-                function() {
+                async function() {
 
                     const deletedTask =
                         tasks.splice(
@@ -188,11 +219,49 @@ function displayTasks() {
 
                     saveDeletedTasks();
 
+
                     displayTasks();
 
                     displayRecycleBin();
 
                     displayReminders();
+
+
+                    /*
+                       If this task was connected
+                       to the server, delete it there too.
+                    */
+
+                    if (
+                        deletedTask.serverId
+                    ) {
+
+                        try {
+
+                            await fetch(
+                                SERVER_URL +
+                                "/reminders/" +
+                                deletedTask.serverId,
+                                {
+                                    method:
+                                        "DELETE"
+                                }
+                            );
+
+                            console.log(
+                                "Reminder deleted from server."
+                            );
+
+                        } catch (error) {
+
+                            console.log(
+                                "Could not delete reminder from server:",
+                                error
+                            );
+
+                        }
+
+                    }
 
                 }
             );
@@ -218,17 +287,25 @@ function displayTasks() {
 }
 
 
-/* =========================
+/* =========================================================
    ADD TASK
-========================= */
+========================================================= */
 
-function addTask() {
+async function addTask() {
 
     const taskText =
         taskInput.value.trim();
 
 
-    if (taskText === "") {
+    const reminderTime =
+        reminderInput.value;
+
+
+    /* CHECK TASK */
+
+    if (
+        taskText === ""
+    ) {
 
         alert(
             "Please enter a task!"
@@ -239,6 +316,8 @@ function addTask() {
     }
 
 
+    /* CREATE TASK */
+
     const newTask = {
 
         text:
@@ -248,10 +327,115 @@ function addTask() {
             false,
 
         reminder:
-            reminderInput.value || null
+            reminderTime || null,
+
+        notified:
+            false,
+
+        serverId:
+            null
 
     };
 
+
+    /*
+       IF A REMINDER WAS SELECTED,
+       SEND IT TO THE SERVER
+    */
+
+    if (
+        reminderTime
+    ) {
+
+        try {
+
+            console.log(
+                "Sending reminder to server..."
+            );
+
+
+            const response =
+                await fetch(
+                    SERVER_URL +
+                    "/reminders",
+                    {
+
+                        method:
+                            "POST",
+
+                        headers: {
+
+                            "Content-Type":
+                                "application/json"
+
+                        },
+
+                        body:
+                            JSON.stringify({
+
+                                text:
+                                    taskText,
+
+                                reminder:
+                                    reminderTime,
+
+                                completed:
+                                    false
+
+                            })
+
+                    }
+                );
+
+
+            if (
+                !response.ok
+            ) {
+
+                throw new Error(
+                    "Server returned an error."
+                );
+
+            }
+
+
+            const data =
+                await response.json();
+
+
+            console.log(
+                "Reminder successfully saved on server:",
+                data
+            );
+
+
+            /*
+               SAVE SERVER ID
+            */
+
+            newTask.serverId =
+                data.reminder.id;
+
+
+        } catch (error) {
+
+            console.error(
+                "Could not connect to reminder server:",
+                error
+            );
+
+
+            alert(
+                "The reminder could not be connected to the server.\n\n" +
+                "Make sure your Node.js reminder server is running."
+            );
+
+        }
+
+    }
+
+
+    /* SAVE TASK LOCALLY */
 
     tasks.push(
         newTask
@@ -261,10 +445,14 @@ function addTask() {
     saveTasks();
 
 
+    /* REFRESH APP */
+
     displayTasks();
 
     displayReminders();
 
+
+    /* CLEAR INPUTS */
 
     taskInput.value = "";
 
@@ -276,9 +464,9 @@ function addTask() {
 }
 
 
-/* =========================
+/* =========================================================
    DISPLAY RECYCLE BIN
-========================= */
+========================================================= */
 
 function displayRecycleBin() {
 
@@ -335,7 +523,7 @@ function displayRecycleBin() {
 
             restoreButton.addEventListener(
                 "click",
-                function() {
+                async function() {
 
                     tasks.push(
                         task
@@ -416,9 +604,9 @@ function displayRecycleBin() {
 }
 
 
-/* =========================
+/* =========================================================
    EMPTY RECYCLE BIN
-========================= */
+========================================================= */
 
 emptyRecycleButton.addEventListener(
     "click",
@@ -457,9 +645,9 @@ emptyRecycleButton.addEventListener(
 );
 
 
-/* =========================
+/* =========================================================
    DISPLAY REMINDERS
-========================= */
+========================================================= */
 
 function displayReminders() {
 
@@ -512,6 +700,7 @@ function displayReminders() {
             const time =
                 document.createElement("small");
 
+
             const date =
                 new Date(
                     task.reminder
@@ -542,9 +731,9 @@ function displayReminders() {
 }
 
 
-/* =========================
-   SIDEBAR OPEN
-========================= */
+/* =========================================================
+   SIDEBAR
+========================================================= */
 
 function openMenu() {
 
@@ -559,10 +748,6 @@ function openMenu() {
 }
 
 
-/* =========================
-   SIDEBAR CLOSE
-========================= */
-
 function closeMenu() {
 
     sidebar.classList.remove(
@@ -576,19 +761,11 @@ function closeMenu() {
 }
 
 
-/* =========================
-   OPEN MENU
-========================= */
-
 menuButton.addEventListener(
     "click",
     openMenu
 );
 
-
-/* =========================
-   CLOSE MENU
-========================= */
 
 closeMenuButton.addEventListener(
     "click",
@@ -596,19 +773,15 @@ closeMenuButton.addEventListener(
 );
 
 
-/* =========================
-   CLOSE WHEN CLICKING OUTSIDE
-========================= */
-
 overlay.addEventListener(
     "click",
     closeMenu
 );
 
 
-/* =========================
+/* =========================================================
    CHANGE PAGES
-========================= */
+========================================================= */
 
 menuItems.forEach(
     function(button) {
@@ -621,8 +794,6 @@ menuItems.forEach(
                     button.dataset.page;
 
 
-                /* HIDE ALL PAGES */
-
                 pages.forEach(
                     function(page) {
 
@@ -634,8 +805,6 @@ menuItems.forEach(
                 );
 
 
-                /* SHOW SELECTED PAGE */
-
                 const selectedPage =
                     document.getElementById(
                         pageId
@@ -646,8 +815,6 @@ menuItems.forEach(
                     "active-page"
                 );
 
-
-                /* UPDATE ACTIVE MENU */
 
                 menuItems.forEach(
                     function(item) {
@@ -665,12 +832,8 @@ menuItems.forEach(
                 );
 
 
-                /* CLOSE MENU */
-
                 closeMenu();
 
-
-                /* REFRESH DATA */
 
                 displayTasks();
 
@@ -685,9 +848,9 @@ menuItems.forEach(
 );
 
 
-/* =========================
+/* =========================================================
    ADD TASK BUTTON
-========================= */
+========================================================= */
 
 addButton.addEventListener(
     "click",
@@ -695,9 +858,9 @@ addButton.addEventListener(
 );
 
 
-/* =========================
+/* =========================================================
    ENTER KEY
-========================= */
+========================================================= */
 
 taskInput.addEventListener(
     "keypress",
@@ -715,20 +878,159 @@ taskInput.addEventListener(
 );
 
 
-/* =========================
+/* =========================================================
    NOTIFICATIONS
-========================= */
+========================================================= */
+
+async function enableNotifications() {
+
+    if (
+        !("Notification" in window)
+    ) {
+
+        alert(
+            "Notifications are not supported on this device."
+        );
+
+        return;
+
+    }
+
+
+    const permission =
+        await Notification.requestPermission();
+
+
+    if (
+        permission === "granted"
+    ) {
+
+        localStorage.setItem(
+            "notificationsEnabled",
+            "true"
+        );
+
+
+        notificationButton.textContent =
+            "🔔 Notifications Enabled";
+
+
+        alert(
+            "Notifications are now enabled!"
+        );
+
+    } else {
+
+        localStorage.setItem(
+            "notificationsEnabled",
+            "false"
+        );
+
+
+        alert(
+            "Notification permission was not granted."
+        );
+
+    }
+
+}
+
 
 notificationButton.addEventListener(
     "click",
-    async function() {
+    enableNotifications
+);
+
+
+/* =========================================================
+   DARK MODE
+========================================================= */
+
+function updateDarkModeButton() {
+
+    const darkMode =
+        localStorage.getItem(
+            "darkMode"
+        ) === "true";
+
+
+    if (
+        darkMode
+    ) {
+
+        darkModeButton.textContent =
+            "☀️ Disable Dark Mode";
+
+    } else {
+
+        darkModeButton.textContent =
+            "🌙 Enable Dark Mode";
+
+    }
+
+}
+
+
+darkModeButton.addEventListener(
+    "click",
+    function() {
+
+        const darkMode =
+            document.body.classList.toggle(
+                "dark-mode"
+            );
+
+
+        localStorage.setItem(
+            "darkMode",
+            darkMode
+        );
+
+
+        updateDarkModeButton();
+
+    }
+);
+
+
+function loadDarkMode() {
+
+    const darkMode =
+        localStorage.getItem(
+            "darkMode"
+        ) === "true";
+
+
+    if (
+        darkMode
+    ) {
+
+        document.body.classList.add(
+            "dark-mode"
+        );
+
+    }
+
+
+    updateDarkModeButton();
+
+}
+
+
+/* =========================================================
+   CLEAR ALL TASKS
+========================================================= */
+
+clearTasksButton.addEventListener(
+    "click",
+    function() {
 
         if (
-            !("Notification" in window)
+            tasks.length === 0
         ) {
 
             alert(
-                "Notifications are not supported on this device."
+                "You don't have any tasks to clear."
             );
 
             return;
@@ -736,25 +1038,29 @@ notificationButton.addEventListener(
         }
 
 
-        const permission =
-            await Notification.requestPermission();
+        const confirmClear =
+            confirm(
+                "Are you sure you want to permanently delete ALL your tasks? This cannot be undone."
+            );
 
 
         if (
-            permission === "granted"
+            confirmClear
         ) {
 
-            notificationButton.textContent =
-                "🔔 Notifications Enabled";
+            tasks = [];
+
+
+            saveTasks();
+
+
+            displayTasks();
+
+            displayReminders();
+
 
             alert(
-                "Notifications are now enabled!"
-            );
-
-        } else {
-
-            alert(
-                "Notification permission was not granted."
+                "All tasks have been cleared."
             );
 
         }
@@ -763,14 +1069,18 @@ notificationButton.addEventListener(
 );
 
 
-/* =========================
-   CHECK REMINDERS
-========================= */
+/* =========================================================
+   LOCAL REMINDER CHECK
+========================================================= */
 
 function checkReminders() {
 
     const now =
         new Date();
+
+
+    let tasksChanged =
+        false;
 
 
     tasks.forEach(
@@ -785,27 +1095,27 @@ function checkReminders() {
             }
 
 
+            if (
+                task.notified
+            ) {
+
+                return;
+
+            }
+
+
             const reminderTime =
                 new Date(
                     task.reminder
                 );
 
 
-            const difference =
-                Math.abs(
-                    now.getTime() -
-                    reminderTime.getTime()
-                );
-
-
-            /* Check within one minute */
-
             if (
-                difference < 60000 &&
-                !task.notified
+                now >= reminderTime
             ) {
 
                 if (
+                    "Notification" in window &&
                     Notification.permission ===
                     "granted"
                 ) {
@@ -813,9 +1123,18 @@ function checkReminders() {
                     new Notification(
                         "⏰ Task Reminder",
                         {
+
                             body:
                                 task.text
+
                         }
+                    );
+
+                } else {
+
+                    alert(
+                        "⏰ Reminder!\n\n" +
+                        task.text
                     );
 
                 }
@@ -825,32 +1144,120 @@ function checkReminders() {
                     true;
 
 
-                saveTasks();
+                tasksChanged =
+                    true;
 
             }
 
         }
     );
 
+
+    if (
+        tasksChanged
+    ) {
+
+        saveTasks();
+
+        displayTasks();
+
+        displayReminders();
+
+    }
+
 }
 
 
-/* =========================
-   CHECK EVERY 30 SECONDS
-========================= */
+/* =========================================================
+   CHECK LOCAL REMINDERS
+========================================================= */
 
 setInterval(
     checkReminders,
-    30000
+    5000
 );
 
 
-/* =========================
+/* =========================================================
+   LOAD SETTINGS
+========================================================= */
+
+function loadSettings() {
+
+    const notificationsEnabled =
+        localStorage.getItem(
+            "notificationsEnabled"
+        ) === "true";
+
+
+    if (
+        notificationsEnabled &&
+        "Notification" in window &&
+        Notification.permission ===
+        "granted"
+    ) {
+
+        notificationButton.textContent =
+            "🔔 Notifications Enabled";
+
+    }
+
+
+    loadDarkMode();
+
+}
+
+
+/* =========================================================
    INITIAL LOAD
-========================= */
+========================================================= */
 
 displayTasks();
 
 displayRecycleBin();
 
 displayReminders();
+
+loadSettings();
+
+checkReminders();
+
+
+/* =========================================================
+   TEST SERVER CONNECTION
+========================================================= */
+
+async function testServerConnection() {
+
+    try {
+
+        const response =
+            await fetch(
+                SERVER_URL
+            );
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "✅ Reminder server connected:",
+            data
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "❌ Reminder server connection failed:",
+            error
+        );
+
+    }
+
+}
+
+
+testServerConnection();
+```
