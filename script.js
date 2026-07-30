@@ -1,1511 +1,1085 @@
 /* =========================================================
-   MY TO-DO APP — COMPLETE SCRIPT
-   GitHub Pages + Render Reminder Server
+MY TO-DO APP - FRONTEND JAVASCRIPT
 ========================================================= */
 
-
 /* =========================================================
-   SERVER URL
+SERVER URL
 ========================================================= */
 
-const SERVER_URL =
-    "https://my-todo-reminder-server.onrender.com";
-
+const SERVER_URL = "http://https://my-todo-reminder-server.onrender.com";
 
 /* =========================================================
-   GET ELEMENTS
+VAPID PUBLIC KEY
 ========================================================= */
 
-const taskInput =
-    document.getElementById("taskInput");
-
-const reminderInput =
-    document.getElementById("reminderInput");
-
-const addButton =
-    document.getElementById("addButton");
-
-const taskList =
-    document.getElementById("taskList");
-
-const emptyMessage =
-    document.getElementById("emptyMessage");
-
-const recycleList =
-    document.getElementById("recycleList");
-
-const emptyRecycleMessage =
-    document.getElementById("emptyRecycleMessage");
-
-const emptyRecycleButton =
-    document.getElementById("emptyRecycleButton");
-
-const reminderList =
-    document.getElementById("reminderList");
-
-const emptyReminderMessage =
-    document.getElementById("emptyReminderMessage");
-
-const notificationButton =
-    document.getElementById("notificationButton");
-
-const darkModeButton =
-    document.getElementById("darkModeButton");
-
-const clearTasksButton =
-    document.getElementById("clearTasksButton");
-
-const sidebar =
-    document.getElementById("sidebar");
-
-const overlay =
-    document.getElementById("overlay");
-
-const menuButton =
-    document.getElementById("menuButton");
-
-const closeMenuButton =
-    document.getElementById("closeMenuButton");
-
-const menuItems =
-    document.querySelectorAll(".menu-item");
-
-const pages =
-    document.querySelectorAll(".page");
-
+const VAPID_PUBLIC_KEY =
+"BD-RtRMXFPHwxdOXyV5U9DymQBTDLJSP1M9vispNiaY1ZDXBYI6kkuig3cg-uZ1TqB-L0DTLGcI-T1EPP5ceNfc";
 
 /* =========================================================
-   CHECK REQUIRED ELEMENTS
-========================================================= */
-
-console.log("🔥 SCRIPT.JS IS RUNNING");
-
-console.log(
-    "Add button found:",
-    addButton
-);
-
-console.log(
-    "Task input found:",
-    taskInput
-);
-
-console.log(
-    "Reminder input found:",
-    reminderInput
-);
-
-
-/* =========================================================
-   LOAD LOCAL DATA
+APP DATA
 ========================================================= */
 
 let tasks =
-    JSON.parse(
-        localStorage.getItem("tasks")
-    ) || [];
-
+JSON.parse(localStorage.getItem("tasks")) || [];
 
 let deletedTasks =
-    JSON.parse(
-        localStorage.getItem("deletedTasks")
-    ) || [];
-
+JSON.parse(localStorage.getItem("deletedTasks")) || [];
 
 /* =========================================================
-   SAVE TASKS
+GET HTML ELEMENTS
+========================================================= */
+
+const taskInput =
+document.getElementById("taskInput");
+
+const reminderInput =
+document.getElementById("reminderInput");
+
+const addButton =
+document.getElementById("addButton");
+
+const taskList =
+document.getElementById("taskList");
+
+const emptyMessage =
+document.getElementById("emptyMessage");
+
+const recycleList =
+document.getElementById("recycleList");
+
+const emptyRecycleMessage =
+document.getElementById("emptyRecycleMessage");
+
+const emptyRecycleButton =
+document.getElementById("emptyRecycleButton");
+
+const reminderList =
+document.getElementById("reminderList");
+
+const emptyReminderMessage =
+document.getElementById("emptyReminderMessage");
+
+const notificationButton =
+document.getElementById("notificationButton");
+
+const darkModeButton =
+document.getElementById("darkModeButton");
+
+const clearTasksButton =
+document.getElementById("clearTasksButton");
+
+const menuButton =
+document.getElementById("menuButton");
+
+const closeMenuButton =
+document.getElementById("closeMenuButton");
+
+const sidebar =
+document.getElementById("sidebar");
+
+const overlay =
+document.getElementById("overlay");
+
+const menuItems =
+document.querySelectorAll(".menu-item");
+
+const pages =
+document.querySelectorAll(".page");
+
+/* =========================================================
+SAVE LOCAL DATA
 ========================================================= */
 
 function saveTasks() {
 
-    localStorage.setItem(
-        "tasks",
-        JSON.stringify(tasks)
-    );
+```
+localStorage.setItem(
+    "tasks",
+    JSON.stringify(tasks)
+);
+```
 
 }
-
-
-/* =========================================================
-   SAVE DELETED TASKS
-========================================================= */
 
 function saveDeletedTasks() {
 
-    localStorage.setItem(
-        "deletedTasks",
-        JSON.stringify(deletedTasks)
-    );
+```
+localStorage.setItem(
+    "deletedTasks",
+    JSON.stringify(deletedTasks)
+);
+```
 
 }
 
-
 /* =========================================================
-   DISPLAY TASKS
+DISPLAY TASKS
 ========================================================= */
 
-function displayTasks() {
+function renderTasks() {
 
-    if (!taskList) {
-        return;
+```
+taskList.innerHTML = "";
+
+if (tasks.length === 0) {
+
+    emptyMessage.style.display = "block";
+
+    return;
+
+}
+
+emptyMessage.style.display = "none";
+
+tasks.forEach(function(task) {
+
+    const li =
+        document.createElement("li");
+
+    li.className = "task";
+
+    if (task.completed) {
+
+        li.classList.add("completed");
+
     }
 
-    taskList.innerHTML = "";
+    const taskText =
+        document.createElement("span");
 
+    taskText.className = "task-text";
 
-    if (tasks.length === 0) {
+    taskText.textContent = task.text;
 
-        if (emptyMessage) {
-            emptyMessage.style.display =
-                "block";
-        }
+    taskText.addEventListener(
+        "click",
+        function() {
 
-    } else {
+            task.completed =
+                !task.completed;
 
-        if (emptyMessage) {
-            emptyMessage.style.display =
-                "none";
-        }
+            saveTasks();
 
-    }
-
-
-    tasks.forEach(
-        function(task, index) {
-
-            const li =
-                document.createElement("li");
-
-            li.className =
-                "task";
-
-
-            if (task.completed) {
-
-                li.classList.add(
-                    "completed"
-                );
-
-            }
-
-
-            const taskText =
-                document.createElement("span");
-
-            taskText.className =
-                "task-text";
-
-            taskText.textContent =
-                task.text;
-
-
-            /* COMPLETE TASK */
-
-            taskText.addEventListener(
-                "click",
-                function() {
-
-                    tasks[index].completed =
-                        !tasks[index].completed;
-
-                    saveTasks();
-
-                    displayTasks();
-
-                }
-            );
-
-
-            /* DELETE BUTTON */
-
-            const deleteButton =
-                document.createElement("button");
-
-            deleteButton.className =
-                "delete-button";
-
-            deleteButton.textContent =
-                "Delete";
-
-
-            deleteButton.addEventListener(
-                "click",
-                async function() {
-
-                    const deletedTask =
-                        tasks.splice(
-                            index,
-                            1
-                        )[0];
-
-
-                    deletedTasks.push(
-                        deletedTask
-                    );
-
-
-                    saveTasks();
-
-                    saveDeletedTasks();
-
-
-                    displayTasks();
-
-                    displayRecycleBin();
-
-                    displayReminders();
-
-
-                    /* DELETE FROM SERVER */
-
-                    if (
-                        deletedTask.serverId
-                    ) {
-
-                        try {
-
-                            await fetch(
-                                SERVER_URL +
-                                "/reminders/" +
-                                deletedTask.serverId,
-                                {
-                                    method:
-                                        "DELETE"
-                                }
-                            );
-
-
-                            console.log(
-                                "✅ Reminder deleted from server."
-                            );
-
-
-                        } catch (error) {
-
-                            console.error(
-                                "❌ Could not delete reminder from server:",
-                                error
-                            );
-
-                        }
-
-                    }
-
-                }
-            );
-
-
-            li.appendChild(
-                taskText
-            );
-
-
-            li.appendChild(
-                deleteButton
-            );
-
-
-            taskList.appendChild(
-                li
-            );
+            renderTasks();
 
         }
     );
 
+    const deleteButton =
+        document.createElement("button");
+
+    deleteButton.className =
+        "delete-button";
+
+    deleteButton.textContent =
+        "Delete";
+
+    deleteButton.addEventListener(
+        "click",
+        function() {
+
+            deleteTask(task.id);
+
+        }
+    );
+
+    li.appendChild(taskText);
+
+    li.appendChild(deleteButton);
+
+    taskList.appendChild(li);
+
+});
+```
+
 }
 
-
 /* =========================================================
-   ADD TASK
+ADD NEW TASK AND REMINDER
 ========================================================= */
 
 async function addTask() {
 
-    console.log(
-        "🔥 ADD TASK FUNCTION STARTED"
+```
+const text =
+    taskInput.value.trim();
+
+const reminder =
+    reminderInput.value;
+
+if (!text) {
+
+    alert(
+        "Please write a task first. 🌸"
     );
 
+    return;
 
-    const taskText =
-        taskInput.value.trim();
+}
 
+/* CREATE LOCAL TASK */
 
-    const reminderTime =
-        reminderInput.value;
+const newTask = {
 
+    id: Date.now(),
 
-    /* CHECK TASK */
+    text: text,
 
-    if (
-        taskText === ""
-    ) {
+    completed: false
+
+};
+
+tasks.push(newTask);
+
+saveTasks();
+
+renderTasks();
+
+taskInput.value = "";
+
+/* CREATE REMINDER */
+
+if (reminder) {
+
+    try {
+
+        const reminderDate =
+            new Date(reminder);
+
+        const response =
+            await fetch(
+                SERVER_URL + "/reminders",
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            text: text,
+
+                            date:
+                                reminderDate
+                                .toISOString()
+                                .split("T")[0],
+
+                            time:
+                                reminderDate
+                                .toTimeString()
+                                .slice(0, 5),
+
+                            completed: false
+
+                        })
+
+                }
+            );
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Failed to create reminder."
+            );
+
+        }
+
+        console.log(
+            "⏰ Reminder created successfully."
+        );
+
+        reminderInput.value = "";
+
+        loadReminders();
+
+    } catch (error) {
+
+        console.error(
+            "Reminder error:",
+            error
+        );
 
         alert(
-            "Please enter a task!"
+            "Task was added, but the reminder could not be saved."
         );
 
-        return;
-
     }
 
-
-    /* CREATE TASK */
-
-    const newTask = {
-
-        text:
-            taskText,
-
-        completed:
-            false,
-
-        reminder:
-            reminderTime || null,
-
-        notified:
-            false,
-
-        serverId:
-            null
-
-    };
-
-
-    /*
-       SEND REMINDER TO ONLINE SERVER
-    */
-
-    if (
-        reminderTime
-    ) {
-
-        try {
-
-            console.log(
-                "📤 Sending reminder to Render server..."
-            );
-
-
-            const response =
-                await fetch(
-                    SERVER_URL +
-                    "/reminders",
-                    {
-
-                        method:
-                            "POST",
-
-                        headers: {
-
-                            "Content-Type":
-                                "application/json"
-
-                        },
-
-                        body:
-                            JSON.stringify({
-
-                                text:
-                                    taskText,
-
-                                reminder:
-                                    reminderTime,
-
-                                completed:
-                                    false
-
-                            })
-
-                    }
-                );
-
-
-            if (
-                !response.ok
-            ) {
-
-                throw new Error(
-                    "Server returned HTTP " +
-                    response.status
-                );
-
-            }
-
-
-            const data =
-                await response.json();
-
-
-            console.log(
-                "✅ Reminder successfully saved on server:",
-                data
-            );
-
-
-            /*
-               SAVE SERVER ID
-            */
-
-            if (
-                data.reminder
-            ) {
-
-                newTask.serverId =
-                    data.reminder.id;
-
-            }
-
-
-        } catch (error) {
-
-            console.error(
-                "❌ Could not connect to reminder server:",
-                error
-            );
-
-
-            alert(
-                "The reminder could not be connected to the online server.\n\n" +
-                "Please check your internet connection."
-            );
-
-        }
-
-    }
-
-
-    /* SAVE TASK LOCALLY */
-
-    tasks.push(
-        newTask
-    );
-
-
-    saveTasks();
-
-
-    /* REFRESH APP */
-
-    displayTasks();
-
-    displayReminders();
-
-
-    /* CLEAR INPUTS */
-
-    taskInput.value = "";
-
-    reminderInput.value = "";
-
-
-    taskInput.focus();
-
-
-    console.log(
-        "✅ Task added successfully!"
-    );
+}
+```
 
 }
 
-
 /* =========================================================
-   ADD TASK BUTTON
+DELETE TASK
 ========================================================= */
 
-if (
-    addButton
-) {
+function deleteTask(taskId) {
 
-    addButton.addEventListener(
+```
+const task =
+    tasks.find(function(item) {
+
+        return item.id === taskId;
+
+    });
+
+if (!task) {
+
+    return;
+
+}
+
+deletedTasks.push(task);
+
+tasks =
+    tasks.filter(function(item) {
+
+        return item.id !== taskId;
+
+    });
+
+saveTasks();
+
+saveDeletedTasks();
+
+renderTasks();
+
+renderRecycleBin();
+```
+
+}
+
+/* =========================================================
+DISPLAY RECYCLE BIN
+========================================================= */
+
+function renderRecycleBin() {
+
+```
+recycleList.innerHTML = "";
+
+if (deletedTasks.length === 0) {
+
+    emptyRecycleMessage.style.display =
+        "block";
+
+    emptyRecycleButton.style.display =
+        "none";
+
+    return;
+
+}
+
+emptyRecycleMessage.style.display =
+    "none";
+
+emptyRecycleButton.style.display =
+    "block";
+
+deletedTasks.forEach(function(task) {
+
+    const li =
+        document.createElement("li");
+
+    li.className =
+        "deleted-task";
+
+    const text =
+        document.createElement("span");
+
+    text.textContent =
+        task.text;
+
+    const restoreButton =
+        document.createElement("button");
+
+    restoreButton.textContent =
+        "Restore";
+
+    restoreButton.addEventListener(
         "click",
         function() {
 
-            console.log(
-                "🔥 ADD BUTTON WAS CLICKED!"
-            );
-
-
-            addTask();
+            restoreTask(task.id);
 
         }
     );
 
-} else {
+    const deleteForeverButton =
+        document.createElement("button");
 
-    console.error(
-        "❌ ADD BUTTON NOT FOUND!"
-    );
+    deleteForeverButton.textContent =
+        "Delete Forever";
 
-}
-
-
-/* =========================================================
-   ENTER KEY
-========================================================= */
-
-if (
-    taskInput
-) {
-
-    taskInput.addEventListener(
-        "keypress",
-        function(event) {
-
-            if (
-                event.key === "Enter"
-            ) {
-
-                addTask();
-
-            }
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   DISPLAY RECYCLE BIN
-========================================================= */
-
-function displayRecycleBin() {
-
-    if (
-        !recycleList
-    ) {
-
-        return;
-
-    }
-
-
-    recycleList.innerHTML = "";
-
-
-    if (
-        deletedTasks.length === 0
-    ) {
-
-        if (
-            emptyRecycleMessage
-        ) {
-
-            emptyRecycleMessage.style.display =
-                "block";
-
-        }
-
-
-        if (
-            emptyRecycleButton
-        ) {
-
-            emptyRecycleButton.style.display =
-                "none";
-
-        }
-
-
-        return;
-
-    }
-
-
-    if (
-        emptyRecycleMessage
-    ) {
-
-        emptyRecycleMessage.style.display =
-            "none";
-
-    }
-
-
-    if (
-        emptyRecycleButton
-    ) {
-
-        emptyRecycleButton.style.display =
-            "block";
-
-    }
-
-
-    deletedTasks.forEach(
-        function(task, index) {
-
-            const li =
-                document.createElement("li");
-
-            li.className =
-                "deleted-task";
-
-
-            const text =
-                document.createElement("span");
-
-            text.textContent =
-                task.text;
-
-
-            /* RESTORE */
-
-            const restoreButton =
-                document.createElement("button");
-
-            restoreButton.textContent =
-                "Restore";
-
-
-            restoreButton.addEventListener(
-                "click",
-                function() {
-
-                    tasks.push(
-                        task
-                    );
-
-
-                    deletedTasks.splice(
-                        index,
-                        1
-                    );
-
-
-                    saveTasks();
-
-                    saveDeletedTasks();
-
-
-                    displayTasks();
-
-                    displayRecycleBin();
-
-                    displayReminders();
-
-                }
-            );
-
-
-            /* DELETE FOREVER */
-
-            const deleteForeverButton =
-                document.createElement("button");
-
-            deleteForeverButton.textContent =
-                "Delete Forever";
-
-
-            deleteForeverButton.addEventListener(
-                "click",
-                function() {
-
-                    deletedTasks.splice(
-                        index,
-                        1
-                    );
-
-
-                    saveDeletedTasks();
-
-
-                    displayRecycleBin();
-
-                }
-            );
-
-
-            li.appendChild(
-                text
-            );
-
-
-            li.appendChild(
-                restoreButton
-            );
-
-
-            li.appendChild(
-                deleteForeverButton
-            );
-
-
-            recycleList.appendChild(
-                li
-            );
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   EMPTY RECYCLE BIN
-========================================================= */
-
-if (
-    emptyRecycleButton
-) {
-
-    emptyRecycleButton.addEventListener(
+    deleteForeverButton.addEventListener(
         "click",
         function() {
 
-            if (
-                deletedTasks.length === 0
-            ) {
-
-                return;
-
-            }
-
-
-            const confirmDelete =
-                confirm(
-                    "Are you sure you want to permanently delete everything in the Recycle Bin?"
-                );
-
-
-            if (
-                confirmDelete
-            ) {
-
-                deletedTasks = [];
-
-
-                saveDeletedTasks();
-
-
-                displayRecycleBin();
-
-            }
+            deleteForever(task.id);
 
         }
     );
 
+    li.appendChild(text);
+
+    li.appendChild(restoreButton);
+
+    li.appendChild(deleteForeverButton);
+
+    recycleList.appendChild(li);
+
+});
+```
+
 }
 
-
 /* =========================================================
-   DISPLAY REMINDERS
+RESTORE TASK
 ========================================================= */
 
-function displayReminders() {
+function restoreTask(taskId) {
 
-    if (
-        !reminderList
-    ) {
+```
+const task =
+    deletedTasks.find(function(item) {
 
-        return;
+        return item.id === taskId;
+
+    });
+
+if (!task) {
+
+    return;
+
+}
+
+tasks.push(task);
+
+deletedTasks =
+    deletedTasks.filter(function(item) {
+
+        return item.id !== taskId;
+
+    });
+
+saveTasks();
+
+saveDeletedTasks();
+
+renderTasks();
+
+renderRecycleBin();
+```
+
+}
+
+/* =========================================================
+DELETE TASK FOREVER
+========================================================= */
+
+function deleteForever(taskId) {
+
+```
+deletedTasks =
+    deletedTasks.filter(function(item) {
+
+        return item.id !== taskId;
+
+    });
+
+saveDeletedTasks();
+
+renderRecycleBin();
+```
+
+}
+
+/* =========================================================
+EMPTY RECYCLE BIN
+========================================================= */
+
+function emptyRecycleBin() {
+
+```
+if (deletedTasks.length === 0) {
+
+    return;
+
+}
+
+const confirmed =
+    confirm(
+        "Delete everything in the Recycle Bin permanently?"
+    );
+
+if (!confirmed) {
+
+    return;
+
+}
+
+deletedTasks = [];
+
+saveDeletedTasks();
+
+renderRecycleBin();
+```
+
+}
+
+/* =========================================================
+LOAD REMINDERS
+========================================================= */
+
+async function loadReminders() {
+
+```
+try {
+
+    const response =
+        await fetch(
+            SERVER_URL + "/reminders"
+        );
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Could not load reminders."
+        );
 
     }
-
-
-    reminderList.innerHTML = "";
-
 
     const reminders =
-        tasks.filter(
-            function(task) {
+        await response.json();
 
-                return task.reminder;
+    renderReminders(reminders);
 
-            }
-        );
+} catch (error) {
 
-
-    if (
-        reminders.length === 0
-    ) {
-
-        if (
-            emptyReminderMessage
-        ) {
-
-            emptyReminderMessage.style.display =
-                "block";
-
-        }
-
-        return;
-
-    }
-
-
-    if (
-        emptyReminderMessage
-    ) {
-
-        emptyReminderMessage.style.display =
-            "none";
-
-    }
-
-
-    reminders.forEach(
-        function(task) {
-
-            const card =
-                document.createElement("div");
-
-            card.className =
-                "reminder-card";
-
-
-            const title =
-                document.createElement("strong");
-
-            title.textContent =
-                "⏰ " + task.text;
-
-
-            const time =
-                document.createElement("small");
-
-
-            const date =
-                new Date(
-                    task.reminder
-                );
-
-
-            time.textContent =
-                date.toLocaleString();
-
-
-            card.appendChild(
-                title
-            );
-
-
-            card.appendChild(
-                time
-            );
-
-
-            reminderList.appendChild(
-                card
-            );
-
-        }
+    console.error(
+        "Could not load reminders:",
+        error
     );
 
 }
+```
 
+}
 
 /* =========================================================
-   SIDEBAR
+DISPLAY REMINDERS
 ========================================================= */
 
-function openMenu() {
+function renderReminders(reminders) {
 
-    if (
-        sidebar
-    ) {
+```
+reminderList.innerHTML = "";
 
-        sidebar.classList.add(
-            "open"
-        );
+if (reminders.length === 0) {
 
-    }
+    emptyReminderMessage.style.display =
+        "block";
 
-
-    if (
-        overlay
-    ) {
-
-        overlay.classList.add(
-            "show"
-        );
-
-    }
+    return;
 
 }
 
+emptyReminderMessage.style.display =
+    "none";
 
-function closeMenu() {
+reminders.forEach(function(reminder) {
 
-    if (
-        sidebar
-    ) {
+    const card =
+        document.createElement("div");
 
-        sidebar.classList.remove(
-            "open"
-        );
+    card.className =
+        "reminder-card";
 
-    }
+    const title =
+        document.createElement("strong");
 
+    title.textContent =
+        reminder.text;
 
-    if (
-        overlay
-    ) {
+    const date =
+        document.createElement("small");
 
-        overlay.classList.remove(
-            "show"
-        );
+    date.textContent =
+        "⏰ " +
+        (reminder.date || "") +
+        " " +
+        (reminder.time || "");
 
-    }
+    card.appendChild(title);
 
-}
+    card.appendChild(date);
 
+    reminderList.appendChild(card);
 
-if (
-    menuButton
-) {
-
-    menuButton.addEventListener(
-        "click",
-        openMenu
-    );
-
-}
-
-
-if (
-    closeMenuButton
-) {
-
-    closeMenuButton.addEventListener(
-        "click",
-        closeMenu
-    );
+});
+```
 
 }
-
-
-if (
-    overlay
-) {
-
-    overlay.addEventListener(
-        "click",
-        closeMenu
-    );
-
-}
-
 
 /* =========================================================
-   CHANGE PAGES
+CONVERT BASE64 TO UINT8ARRAY
 ========================================================= */
 
-menuItems.forEach(
-    function(button) {
+function urlBase64ToUint8Array(
+base64String
+) {
 
-        button.addEventListener(
-            "click",
-            function() {
+```
+const padding =
+    "=".repeat(
+        (4 -
+            base64String.length % 4) % 4
+    );
 
-                const pageId =
-                    button.dataset.page;
+const base64 =
+    (
+        base64String +
+        padding
+    )
+    .replace(/-/g, "+")
+    .replace(/_/g, "/");
 
+const rawData =
+    window.atob(base64);
 
-                pages.forEach(
-                    function(page) {
+const outputArray =
+    new Uint8Array(
+        rawData.length
+    );
 
-                        page.classList.remove(
-                            "active-page"
-                        );
+for (
+    let i = 0;
+    i < rawData.length;
+    ++i
+) {
 
-                    }
-                );
+    outputArray[i] =
+        rawData.charCodeAt(i);
 
+}
 
-                const selectedPage =
-                    document.getElementById(
-                        pageId
-                    );
+return outputArray;
+```
 
-
-                if (
-                    selectedPage
-                ) {
-
-                    selectedPage.classList.add(
-                        "active-page"
-                    );
-
-                }
-
-
-                menuItems.forEach(
-                    function(item) {
-
-                        item.classList.remove(
-                            "active"
-                        );
-
-                    }
-                );
-
-
-                button.classList.add(
-                    "active"
-                );
-
-
-                closeMenu();
-
-
-                displayTasks();
-
-                displayRecycleBin();
-
-                displayReminders();
-
-            }
-        );
-
-    }
-);
-
+}
 
 /* =========================================================
-   NOTIFICATIONS
+ENABLE WEB PUSH NOTIFICATIONS
 ========================================================= */
 
 async function enableNotifications() {
 
-    if (
-        !("Notification" in window)
-    ) {
+```
+try {
+
+    if (!("Notification" in window)) {
 
         alert(
-            "Notifications are not supported on this device."
+            "Your browser does not support notifications."
         );
 
         return;
 
     }
 
+    if (!("serviceWorker" in navigator)) {
+
+        alert(
+            "Your browser does not support Service Workers."
+        );
+
+        return;
+
+    }
+
+    if (!("PushManager" in window)) {
+
+        alert(
+            "Your browser does not support Push Notifications."
+        );
+
+        return;
+
+    }
 
     const permission =
         await Notification.requestPermission();
 
-
-    if (
-        permission === "granted"
-    ) {
-
-        localStorage.setItem(
-            "notificationsEnabled",
-            "true"
-        );
-
-
-        if (
-            notificationButton
-        ) {
-
-            notificationButton.textContent =
-                "🔔 Notifications Enabled";
-
-        }
-
-
-        alert(
-            "Notifications are now enabled!"
-        );
-
-    } else {
-
-        localStorage.setItem(
-            "notificationsEnabled",
-            "false"
-        );
-
+    if (permission !== "granted") {
 
         alert(
             "Notification permission was not granted."
         );
 
-    }
-
-}
-
-
-if (
-    notificationButton
-) {
-
-    notificationButton.addEventListener(
-        "click",
-        enableNotifications
-    );
-
-}
-
-
-/* =========================================================
-   DARK MODE
-========================================================= */
-
-function updateDarkModeButton() {
-
-    if (
-        !darkModeButton
-    ) {
-
         return;
 
     }
 
+    const registration =
+        await navigator.serviceWorker.ready;
 
-    const darkMode =
-        localStorage.getItem(
-            "darkMode"
-        ) === "true";
+    let subscription =
+        await registration.pushManager
+            .getSubscription();
 
+    if (!subscription) {
 
-    if (
-        darkMode
-    ) {
+        subscription =
+            await registration.pushManager
+                .subscribe({
 
-        darkModeButton.textContent =
-            "☀️ Disable Dark Mode";
+                    userVisibleOnly: true,
 
-    } else {
+                    applicationServerKey:
+                        urlBase64ToUint8Array(
+                            VAPID_PUBLIC_KEY
+                        )
 
-        darkModeButton.textContent =
-            "🌙 Enable Dark Mode";
+                });
 
     }
 
-}
+    const response =
+        await fetch(
+            SERVER_URL + "/subscribe",
+            {
 
+                method: "POST",
 
-if (
-    darkModeButton
-) {
+                headers: {
 
-    darkModeButton.addEventListener(
-        "click",
-        function() {
+                    "Content-Type":
+                        "application/json"
 
-            const darkMode =
-                document.body.classList.toggle(
-                    "dark-mode"
-                );
+                },
 
+                body:
+                    JSON.stringify(
+                        subscription
+                    )
 
-            localStorage.setItem(
-                "darkMode",
-                darkMode
-            );
+            }
+        );
 
+    if (!response.ok) {
 
-            updateDarkModeButton();
+        throw new Error(
+            "Could not save push subscription."
+        );
 
-        }
+    }
+
+    notificationButton.textContent =
+        "✅ Notifications Enabled";
+
+    alert(
+        "Notifications are enabled! 🔔"
+    );
+
+    console.log(
+        "🔔 Push subscription saved successfully."
+    );
+
+} catch (error) {
+
+    console.error(
+        "Notification setup failed:",
+        error
+    );
+
+    alert(
+        "Could not enable notifications. Check the browser console for details."
     );
 
 }
+```
 
+}
+
+/* =========================================================
+DARK MODE
+========================================================= */
+
+function toggleDarkMode() {
+
+```
+document.body.classList.toggle(
+    "dark-mode"
+);
+
+const darkModeEnabled =
+    document.body.classList.contains(
+        "dark-mode"
+    );
+
+localStorage.setItem(
+    "darkMode",
+    darkModeEnabled
+);
+
+if (darkModeEnabled) {
+
+    darkModeButton.textContent =
+        "☀️ Disable Dark Mode";
+
+} else {
+
+    darkModeButton.textContent =
+        "🌙 Enable Dark Mode";
+
+}
+```
+
+}
+
+/* =========================================================
+LOAD DARK MODE
+========================================================= */
 
 function loadDarkMode() {
 
-    const darkMode =
-        localStorage.getItem(
-            "darkMode"
-        ) === "true";
+```
+const darkModeEnabled =
+    localStorage.getItem(
+        "darkMode"
+    ) === "true";
 
+if (darkModeEnabled) {
 
-    if (
-        darkMode
-    ) {
+    document.body.classList.add(
+        "dark-mode"
+    );
 
-        document.body.classList.add(
-            "dark-mode"
-        );
+    darkModeButton.textContent =
+        "☀️ Disable Dark Mode";
 
-    }
-
-
-    updateDarkModeButton();
+}
+```
 
 }
 
+/* =========================================================
+CLEAR ALL TASKS
+========================================================= */
+
+function clearAllTasks() {
+
+```
+if (tasks.length === 0) {
+
+    alert(
+        "You don't have any tasks to clear."
+    );
+
+    return;
+
+}
+
+const confirmed =
+    confirm(
+        "Are you sure you want to delete all your tasks?"
+    );
+
+if (!confirmed) {
+
+    return;
+
+}
+
+deletedTasks =
+    deletedTasks.concat(tasks);
+
+tasks = [];
+
+saveTasks();
+
+saveDeletedTasks();
+
+renderTasks();
+
+renderRecycleBin();
+```
+
+}
 
 /* =========================================================
-   CLEAR ALL TASKS
+SIDEBAR
 ========================================================= */
+
+function openSidebar() {
+
+```
+sidebar.classList.add("open");
+
+overlay.classList.add("show");
+```
+
+}
+
+function closeSidebar() {
+
+```
+sidebar.classList.remove("open");
+
+overlay.classList.remove("show");
+```
+
+}
+
+/* =========================================================
+PAGE NAVIGATION
+========================================================= */
+
+function showPage(pageId) {
+
+```
+pages.forEach(function(page) {
+
+    page.classList.remove(
+        "active-page"
+    );
+
+});
+
+const selectedPage =
+    document.getElementById(pageId);
+
+if (selectedPage) {
+
+    selectedPage.classList.add(
+        "active-page"
+    );
+
+}
+
+menuItems.forEach(function(item) {
+
+    item.classList.remove("active");
+
+    if (
+        item.dataset.page === pageId
+    ) {
+
+        item.classList.add("active");
+
+    }
+
+});
+
+closeSidebar();
 
 if (
-    clearTasksButton
+    pageId === "remindersPage"
 ) {
 
-    clearTasksButton.addEventListener(
-        "click",
-        function() {
+    loadReminders();
 
-            if (
-                tasks.length === 0
-            ) {
-
-                alert(
-                    "You don't have any tasks to clear."
-                );
-
-                return;
-
-            }
-
-
-            const confirmClear =
-                confirm(
-                    "Are you sure you want to permanently delete ALL your tasks? This cannot be undone."
-                );
-
-
-            if (
-                confirmClear
-            ) {
-
-                tasks = [];
-
-
-                saveTasks();
-
-
-                displayTasks();
-
-                displayReminders();
-
-
-                alert(
-                    "All tasks have been cleared."
-                );
-
-            }
-
-        }
-    );
+}
+```
 
 }
 
-
 /* =========================================================
-   LOCAL REMINDER CHECK
+EVENT LISTENERS
 ========================================================= */
 
-function checkReminders() {
-
-    const now =
-        new Date();
-
-
-    let tasksChanged =
-        false;
-
-
-    tasks.forEach(
-        function(task) {
-
-            if (
-                !task.reminder
-            ) {
-
-                return;
-
-            }
-
-
-            if (
-                task.notified
-            ) {
-
-                return;
-
-            }
-
-
-            const reminderTime =
-                new Date(
-                    task.reminder
-                );
-
-
-            if (
-                now >= reminderTime
-            ) {
-
-                if (
-                    "Notification" in window &&
-                    Notification.permission ===
-                    "granted"
-                ) {
-
-                    new Notification(
-                        "⏰ Task Reminder",
-                        {
-
-                            body:
-                                task.text
-
-                        }
-                    );
-
-                } else {
-
-                    alert(
-                        "⏰ Reminder!\n\n" +
-                        task.text
-                    );
-
-                }
-
-
-                task.notified =
-                    true;
-
-
-                tasksChanged =
-                    true;
-
-            }
-
-        }
-    );
-
-
-    if (
-        tasksChanged
-    ) {
-
-        saveTasks();
-
-        displayTasks();
-
-        displayReminders();
-
-    }
-
-}
-
-
-/* =========================================================
-   CHECK LOCAL REMINDERS
-========================================================= */
-
-setInterval(
-    checkReminders,
-    5000
+addButton.addEventListener(
+"click",
+addTask
 );
 
+taskInput.addEventListener(
+"keydown",
+function(event) {
 
-/* =========================================================
-   LOAD SETTINGS
-========================================================= */
+```
+    if (event.key === "Enter") {
 
-function loadSettings() {
-
-    const notificationsEnabled =
-        localStorage.getItem(
-            "notificationsEnabled"
-        ) === "true";
-
-
-    if (
-        notificationsEnabled &&
-        "Notification" in window &&
-        Notification.permission ===
-        "granted"
-    ) {
-
-        if (
-            notificationButton
-        ) {
-
-            notificationButton.textContent =
-                "🔔 Notifications Enabled";
-
-        }
-
-    }
-
-
-    loadDarkMode();
-
-}
-
-
-/* =========================================================
-   INITIAL LOAD
-========================================================= */
-
-displayTasks();
-
-displayRecycleBin();
-
-displayReminders();
-
-loadSettings();
-
-checkReminders();
-
-
-/* =========================================================
-   TEST ONLINE SERVER CONNECTION
-========================================================= */
-
-async function testServerConnection() {
-
-    try {
-
-        console.log(
-            "🔄 Testing online reminder server..."
-        );
-
-
-        const response =
-            await fetch(
-                SERVER_URL
-            );
-
-
-        if (
-            !response.ok
-        ) {
-
-            throw new Error(
-                "Server returned HTTP " +
-                response.status
-            );
-
-        }
-
-
-        const data =
-            await response.json();
-
-
-        console.log(
-            "✅ Online reminder server connected:",
-            data
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "❌ Online reminder server connection failed:",
-            error
-        );
+        addTask();
 
     }
 
 }
+```
 
+);
 
-testServerConnection();
+emptyRecycleButton.addEventListener(
+"click",
+emptyRecycleBin
+);
 
+notificationButton.addEventListener(
+"click",
+enableNotifications
+);
+
+darkModeButton.addEventListener(
+"click",
+toggleDarkMode
+);
+
+clearTasksButton.addEventListener(
+"click",
+clearAllTasks
+);
+
+menuButton.addEventListener(
+"click",
+openSidebar
+);
+
+closeMenuButton.addEventListener(
+"click",
+closeSidebar
+);
+
+overlay.addEventListener(
+"click",
+closeSidebar
+);
+
+menuItems.forEach(function(item) {
+
+```
+item.addEventListener(
+    "click",
+    function() {
+
+        showPage(
+            item.dataset.page
+        );
+
+    }
+);
+```
+
+});
 
 /* =========================================================
-   FINAL DEBUG MESSAGE
+START APP
 ========================================================= */
+
+renderTasks();
+
+renderRecycleBin();
+
+loadReminders();
+
+loadDarkMode();
 
 console.log(
-    "✅ My To-Do App JavaScript loaded successfully!"
+"🌸 My To-Do App is ready!"
 );
