@@ -13,9 +13,7 @@ VAPID PUBLIC KEY
 ========================================================= */
 
 const VAPID_PUBLIC_KEY =
-"BD-const VAPID_PUBLIC_KEY =
-"BD-RtRMXFPHwxdOXyV5U9DymQBTDLJSP1M9vispNiaY1ZDXBYI6kkuig3cg-uZ1TqB-L0DTLGcI-T1EPP5ceNfc";-uZ1TqB-L0DTLGcI-T1EPP5ceNfc";
-
+"BD-RtRMXFPHwxdOXyV5U9DymQBTDLJSP1M9vispNiaY1ZDXBYI6kkuig3cg-uZ1TqB-L0DTLGcI-T1EPP5ceNfc";
 /* =========================================================
 APP DATA
 ========================================================= */
