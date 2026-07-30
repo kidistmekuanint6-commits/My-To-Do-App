@@ -6,8 +6,7 @@ MY TO-DO APP - FRONTEND JAVASCRIPT
 SERVER URL
 ========================================================= */
 
-const SERVER_URL = "http://https://my-todo-reminder-server.onrender.com";
-
+const SERVER_URL = const SERVER_URL = "https://my-todo-reminder-server.onrender.com";
 /* =========================================================
 VAPID PUBLIC KEY
 ========================================================= */
