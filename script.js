@@ -6,12 +6,14 @@ MY TO-DO APP - FRONTEND JAVASCRIPT
 SERVER URL
 ========================================================= */
 
-const SERVER_URL = const SERVER_URL = "https://my-todo-reminder-server.onrender.com";
+const SERVER_URL = "https://my-todo-reminder-server.onrender.com";
+
 /* =========================================================
 VAPID PUBLIC KEY
 ========================================================= */
 
 const VAPID_PUBLIC_KEY =
+"BD-RtRMXFPHwxdOXyV5U9DymQBTDLJSP1M9vispNiaY1ZDXBYI6kkuig3cg-uZ1TqB-L0DTLGcI-T1EPP5ceNfc";
 "BD-RtRMXFPHwxdOXyV5U9DymQBTDLJSP1M9vispNiaY1ZDXBYI6kkuig3cg-uZ1TqB-L0DTLGcI-T1EPP5ceNfc";
 
 /* =========================================================
