@@ -12,12 +12,14 @@ const SERVER_URL = "https://my-todo-reminder-server.onrender.com";
 VAPID PUBLIC KEY
 ========================================================= */
 
-const VAPID_PUBLIC_KEY =
-"BD-RtRMXFPHwxdOXyV5U9DymQBTDLJSP1M9vispNiaY1ZDXBYI6kkuig3cg-uZ1TqB-L0DTLGcI-T1EPP5ceNfc";
+const VAPID_PUBLIC_KEY = "BD-RtRMXFPHwxdOXyV5U9DymQBTDLJSP1M9vispNiaY1ZDXBYI6kkuig3cg-uZ1TqB-L0DTLGcI-T1EPP5ceNfc";
+
 /* =========================================================
 APP DATA
 ========================================================= */
 
+let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+let deletedTasks = JSON.parse(localStorage.getItem("deletedTasks")) || [];
 let tasks =
 JSON.parse(localStorage.getItem("tasks")) || [];
 
